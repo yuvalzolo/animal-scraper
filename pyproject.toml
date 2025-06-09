@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "animal-scraper"
+version = "0.1.0"
+description = ""
+authors = ["yuval_zolo <yuval.z@aporianetworks.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.32.4"
+beautifulsoup4 = "^4.13.4"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

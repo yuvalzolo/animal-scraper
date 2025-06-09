@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.log
+*.sqlite3
+
+# Virtual environments (just in case)
+.env
+.venv/
+
+# Poetry lock file if you don’t want to commit it (optional)
+# poetry.lock
+
+# Output files
+/tmp/
+output.html
+
+# VSCode or PyCharm
+.vscode/
+.idea/
