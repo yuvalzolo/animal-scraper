@@ -14,7 +14,7 @@ __pycache__/
 # Output files
 /tmp/
 output.html
-
+output_images/
 # VSCode or PyCharm
 .vscode/
 .idea/

@@ -1,6 +1,8 @@
-from scraper import WikipediaScraper
-from image_downloader import ImageDownloader
-from html_generator import HTMLGenerator
+from animal_scraper.scraper import WikipediaScraper
+from animal_scraper.image_downloader import ImageDownloader
+from animal_scraper.html_generator import HTMLGenerator
+import asyncio
+
 
 def main():
     scraper = WikipediaScraper()
@@ -9,7 +11,8 @@ def main():
 
     downloader = ImageDownloader()
     for animal in animals:
-        downloader.download_image(animal.name)
+        image_path = downloader.download_image(animal.name).lower()
+        animal.image_path = image_path
 
     html_gen = HTMLGenerator()
     html_gen.generate(animals)
