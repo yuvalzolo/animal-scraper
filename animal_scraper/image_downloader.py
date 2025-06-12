@@ -8,13 +8,15 @@ from bs4 import BeautifulSoup
 
 class ImageDownloader:
     def __init__(self, output_dir='/tmp'):
+        # Create output directory for images
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.fallback_path = self.output_dir / "fallback.jpg"
         self.ensure_fallback_image()
-        self.cache = {}
+        self.cache = {}  # Cache to avoid re-downloading
 
     def ensure_fallback_image(self):
+        # Downloads a placeholder image if not already available
         if not self.fallback_path.exists():
             fallback_url = "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
             try:
@@ -25,9 +27,11 @@ class ImageDownloader:
                 print(f"[DEBUG] Failed to download fallback image: {e}")
 
     def is_disambiguation_page(self, soup):
+        # Check if the page is a disambiguation page by HTML structure or text
         return bool(soup.select("table.ambox-disambig, .mw-disambig")) or "may refer to:" in soup.get_text().lower()
 
     def follow_first_valid_link(self, soup):
+        # Navigate to first valid link on a disambiguation page
         for li in soup.select(".mw-parser-output ul li a"):
             href = li.get("href", "")
             if href.startswith("/wiki/") and not any(x in href for x in [":", "#"]):
@@ -36,6 +40,7 @@ class ImageDownloader:
         return None
 
     def resolve_disambiguation(self, animal_name):
+        # Uses Wikipedia search to resolve ambiguous terms
         search_query_url = f"https://en.wikipedia.org/w/index.php?search={quote(animal_name)}"
         try:
             resp = requests.get(search_query_url, timeout=10)
@@ -50,6 +55,7 @@ class ImageDownloader:
         return None
 
     def try_suffix_fallbacks(self, animal_name):
+        # Try fallback URLs by appending suffixes like _(animal) or _(bird)
         suffixes = ["_(bird)", "_(animal)", "_(mammal)", "_(fish)"]
         for suffix in suffixes:
             candidate = f"https://en.wikipedia.org/wiki/{quote(animal_name + suffix)}"
@@ -66,6 +72,7 @@ class ImageDownloader:
         return None
 
     def get_valid_image_url(self, soup):
+        # Look for a high-res image in infobox, reconstruct full image URL from thumbnail
         def is_valid(src):
             invalid_keywords = [
                 "wiktionary", "disambig", "question_book", "ambox", "commons-logo",
@@ -123,6 +130,8 @@ class ImageDownloader:
         return re.sub(r'[\\/*?:"<>|]', '_', name.lower().replace(" ", "_"))
 
     def download_image(self, animal_name: str) -> str:
+        # Main logic to download an animal image from Wikipedia.
+        # Handles redirects, disambiguation, suffix fallbacks, and ensures caching.
         if animal_name in self.cache:
             return self.cache[animal_name]
 

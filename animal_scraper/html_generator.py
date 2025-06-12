@@ -13,10 +13,11 @@ class HTMLGenerator:
         os.makedirs(self.image_dir, exist_ok=True)
 
     def sanitize_filename(self, name: str) -> str:
-        # Match logic used in ImageDownloader
+        # Make filename safe for filesystem and consistent with image downloader
         return re.sub(r'[\\/*?:"<>|]', '_', name.lower().replace(" ", "_"))
 
     def copy_image(self, source_path: str, dest_filename: str) -> str:
+        # Copy image from /tmp to local output_images for HTML use
         dest_path = os.path.join(self.image_dir, dest_filename)
         if not os.path.exists(dest_path):
             try:
@@ -26,6 +27,7 @@ class HTMLGenerator:
         return dest_path
 
     def generate(self, animals: List[Animal]):
+        # Group animals by adjective and generate the HTML output file
         with open(self.output_file, 'w', encoding='utf-8') as f:
             f.write('''
 <!DOCTYPE html>
@@ -113,7 +115,7 @@ class HTMLGenerator:
                 for adj in animal.adjectives:
                     adjectives_map.setdefault(adj, []).append(animal)
 
-            # Generate HTML blocks
+            # Generate the HTML blocks for each adjective
             for adj, animal_list in sorted(adjectives_map.items()):
                 f.write(f'<div class="adjective-block">\n')
                 f.write(f'<h2>{adj.capitalize()}</h2>\n')

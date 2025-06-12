@@ -11,6 +11,7 @@ class WikipediaScraper:
     URL = "https://en.wikipedia.org/wiki/List_of_animal_names"
 
     def fetch_html(self) -> str:
+        # Fetch and cache the Wikipedia page HTML locally
         cache_path = os.path.join(tempfile.gettempdir(), "animal_names_cache.html")
         if os.path.exists(cache_path):
             with open(cache_path, 'r', encoding='utf-8') as f:
@@ -26,6 +27,7 @@ class WikipediaScraper:
         return html
 
     def clean_animal_name(self, raw_name: str) -> str:
+        # Clean up animal names by removing refs, parentheses, etc.
         name = raw_name.strip()
         name = name.split('\n')[0]
         name = re.sub(r'\[.*?\]', '', name)
@@ -35,10 +37,12 @@ class WikipediaScraper:
         return name.strip().title()
 
     def parse_adjectives(self, raw: str) -> List[str]:
+        # Split multiple adjectives using common delimiters
         parts = re.split(r'[,\n/;]+', raw)
         return [part.strip().lower() for part in parts if part.strip()]
 
     def parse_animals(self, html: str) -> List[Animal]:
+        # Parse the main tables on the Wikipedia page to extract animal names and adjectives
         soup = BeautifulSoup(html, 'html.parser')
         tables = soup.find_all('table', {'class': 'wikitable'})
         animals = []

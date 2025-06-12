@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 def download_images_concurrently(animal_objects, downloader, max_workers=10):
+    # Uses a thread pool to download images concurrently
     results = {}
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -26,6 +27,7 @@ def download_images_concurrently(animal_objects, downloader, max_workers=10):
 
 
 def main():
+    # Orchestrates the flow: scrape → download → generate HTML
     scraper = WikipediaScraper()
     html = scraper.fetch_html()
     animals = scraper.parse_animals(html)
